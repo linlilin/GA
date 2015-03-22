@@ -24,8 +24,8 @@ class GA(object):
         LILIN
         """
         TP = randint(1,7)
-        Anak1= "".join([u[0:TP],v[TP+1:9]])
-        Anak2 = "".join([v[0:TP],u[TP+1:9]])
+        Anak1= "".join([u[:TP],v[TP:]])
+        Anak2 = "".join([v[:TP],u[TP:]])
         print Anak1
         print Anak2
         print TP
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     LILIN
     """
     Ortu1= '11101010'
-    Ortu2= '11011010'
+    Ortu2= '11010011'
     ga._crossover(Ortu1,Ortu2)
 
 
