@@ -30,10 +30,18 @@ class GA(object):
         print Anak2
         print TP
 
+
     def _mutation(self, ind):
         """
-        Mutation function ..... coming soon
-        """     
+		Haris
+        """  
+		for x in range(len(ind)) :
+			rnd = random.random()
+			if rnd >= self.mut_rate :
+				if ind[x] == 0 :
+					ind[x] = 1
+				else :
+					ind[x] = 0     
 
     def _selection(self, pop):
         """
