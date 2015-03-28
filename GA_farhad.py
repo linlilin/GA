@@ -1,5 +1,6 @@
 import random
-import pylab
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class Individu:
     def __init__(self):
@@ -25,13 +26,13 @@ class Individu:
     def setFitness(self,f):
         """
         # fitness minimasi kasus negative
-        """
         self.fitness = 100-(1/(f+0.1))
+        """
 
         """
         # fitness minimasi kasus non negative
-        self.fitness = 1/(f+0.1)
         """
+        self.fitness = 1/(f+0.1)
 
         """
         # fitness maksimasi
@@ -43,7 +44,7 @@ class Populasi:
         self.individu = []
 
     def createNew(self,n):
-        self.individu = [Individu() for x in xrange(10)]
+        self.individu = [Individu() for x in xrange(n)]
         for x in self.individu:
             x.setKromosom(random.randint(0,15),random.randint(0,15))
             x.setFitness(self.fungsi(x.getKromosom()))
@@ -53,7 +54,9 @@ class Populasi:
             x.setFitness(self.fungsi(x.getKromosom()))
 
     def fungsi(self,x):
-        return 3*x[0]**2+2*x[1]**2-4*x[0]+x[1]/2
+        # return 3*x[0]**2+2*x[1]**2-4*x[0]+x[1]/2
+        # return x[0]+x[1]
+        return 100*(x[0]**2 - x[1])**2 + (1-x[0])**2
 
     def getFittest(self):
         _max = 0
@@ -110,15 +113,26 @@ class GA:
 
 ga = GA()
 newpopulation = None
-for gen in xrange(50):
+x = []
+y = []
+for gen in xrange(2000):
+    x.append([])
+    y.append([])
     if (gen==0):
         populasi = Populasi()
-        populasi.createNew(4)
+        populasi.createNew(10)
         ga.populasi = populasi
     else:
         ga.populasi = newpopulation
         ga.populasi.countFitness()
     
+    for z in ga.populasi.individu:
+        x[gen].append(z.getKromosom()[0])
+        y[gen].append(z.getKromosom()[1])
+
+    # x[gen].append(ga.populasi.getFittest().getKromosom()[0])
+    # y[gen].append(ga.populasi.getFittest().getKromosom()[1])
+
     newpopulation = Populasi()
 
     print "Generasi-",(gen+1)," : ",ga.populasi.getFittest().getKromosom()
@@ -142,6 +156,29 @@ for gen in xrange(50):
         elitism = ga.populasi.getFittest()
         newpopulation.individu.append(elitism)
 
+fig = plt.figure()
+ax = plt.axes(xlim=(-15, 15), ylim=(-15, 15))
+line, = ax.plot([], [], 'ro')
+# initialization function: plot the background of each frame
+def init():
+    line.set_data(x[0], y[0])
+    return line,
+
+# animation function.  This is called sequentially
+xs = []
+ys = []
+def animate(i):
+    # xs.append(x[i+1])
+    # ys.append(y[i+1])
+    xs = x[i+1]
+    ys = y[i+1]
+    line.set_data(xs, ys)
+    return line,
+
+# call the animator.  blit=True means only re-draw the parts that have changed.
 
 print "Solusi : ",ga.populasi.getFittest().getKromosom()
-print "Hasil : ",ga.populasi.getFittest().fitness
+print "Hasil : ",ga.populasi.fungsi(ga.populasi.getFittest().getKromosom())
+anim = animation.FuncAnimation(fig, animate,frames=1999, init_func=None, interval=20, blit=True,repeat=False)
+
+plt.show()
