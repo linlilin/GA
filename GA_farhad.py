@@ -15,16 +15,17 @@ def populasi():
     return [encode(random.randint(0,10),random.randint(0,10)) for x in xrange(10)]
 def roulette(x):
     weight=sum(x)
-    fit.sort()
+    x.sort()
     toss=random.uniform(0,weight)
     ran=0
-    for i in range(0,len(fit)) :
-        ran+=fit[i]
+    for i in range(0,len(x)) :
+        ran+=x[i]
         if (toss < ran):
-            return fit[i]
+            return x[i]
 a = populasi()
 fit = [fitness(fungsi(decode("".join(x)))) for x in a]
 print a
+print fit
 print roulette(fit)
 print decode("".join(a[fit.index(min(fit))]))
 print decode("".join(a[fit.index(roulette(fit))]))
