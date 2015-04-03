@@ -139,8 +139,6 @@ for gen in xrange(500):
     print "Fitness : ",ga.populasi.getFittest().fitness
     print "==========================="
 
-
-
     for mpool in xrange(len(ga.populasi.individu)/2):
         parent1 = ga.populasi.individu[ga.parentselection()]
         parent2 = ga.populasi.individu[ga.parentselection()]
@@ -151,10 +149,10 @@ for gen in xrange(500):
             a.kromosom = ga.mutasi(a.kromosom)
             newpopulation.individu.append(a)
 
-    newpopulation.individu.remove(newpopulation.getMinFit())
-
-    elitism = ga.populasi.getFittest()
-    newpopulation.individu.append(elitism)
+    newpopulation.countFitness()
+    newpopulation.individu = newpopulation.individu+ga.populasi.individu
+    for i in xrange(len(newpopulation.individu)-len(ga.populasi.individu)):
+        newpopulation.individu.remove(newpopulation.getMinFit())
 
 fig = plt.figure()
 ax = plt.axes(xlim=(-15, 15), ylim=(-15, 15))
@@ -179,6 +177,6 @@ def animate(i):
 
 print "Solusi : ",ga.populasi.getFittest().getKromosom()
 print "Hasil : ",ga.populasi.fungsi(ga.populasi.getFittest().getKromosom())
-anim = animation.FuncAnimation(fig, animate,frames=499, init_func=None, interval=20, blit=False,repeat=False)
+anim = animation.FuncAnimation(fig, animate,frames=499, init_func=None, interval=160, blit=False,repeat=False)
 
 plt.show()
