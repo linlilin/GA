@@ -25,17 +25,9 @@ class Individu:
 
     def setFitness(self,f):
         """
-        # fitness minimasi kasus negative
+        # fitness minimasi
         """
-        if(f<0):
-            self.fitness = 100-(1/(f+0.1))
-        else:
-            self.fitness = 1/(f+0.1)
-
-        """
-        # fitness minimasi kasus non negative
-        self.fitness = 1/(f+0.1)
-        """
+        self.fitness = 100-f
 
         """
         # fitness maksimasi
@@ -57,8 +49,9 @@ class Populasi:
             x.setFitness(self.fungsi(x.getKromosom()))
 
     def fungsi(self,x):
-        return 3*x[0]**2+2*x[1]**2-4*x[0]+x[1]/2
-        # return x[0]+x[1]
+        # return 3*x[0]**2-2*x[1]**2-4*x[0]+x[1]/2
+        # return 7*x[0]-3*x[1]
+        return x[0]+x[1]
         # return 100*(x[0]**2 - x[1])**2 + (1-x[0])**2
 
     def getFittest(self):
@@ -82,7 +75,8 @@ class Populasi:
 class GA:
     def __init__(self):
         self.populasi = None
-        self.mut_rate = 0.3
+        self.mut_rate = 0.8
+        self.gen = 18
 
     def parentselection(self):
         # menggunakan roullette wheel
@@ -118,7 +112,7 @@ ga = GA()
 newpopulation = None
 x = []
 y = []
-for gen in xrange(500):
+for gen in xrange(ga.gen):
     x.append([])
     y.append([])
     if (gen==0):
@@ -138,8 +132,6 @@ for gen in xrange(500):
     print "Generasi-",(gen+1)," : ",ga.populasi.getFittest().getKromosom()
     print "Fitness : ",ga.populasi.getFittest().fitness
     print "==========================="
-
-
 
     for mpool in xrange(len(ga.populasi.individu)/2):
         parent1 = ga.populasi.individu[ga.parentselection()]
@@ -179,6 +171,6 @@ def animate(i):
 
 print "Solusi : ",ga.populasi.getFittest().getKromosom()
 print "Hasil : ",ga.populasi.fungsi(ga.populasi.getFittest().getKromosom())
-anim = animation.FuncAnimation(fig, animate,frames=499, init_func=None, interval=20, blit=False,repeat=False)
+anim = animation.FuncAnimation(fig, animate,frames=ga.gen-1, init_func=None, interval=20, blit=False,repeat=False)
 
 plt.show()

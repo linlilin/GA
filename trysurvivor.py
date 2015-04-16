@@ -25,17 +25,9 @@ class Individu:
 
     def setFitness(self,f):
         """
-        # fitness minimasi kasus negative
+        # fitness minimasi
         """
-        if(f<0):
-            self.fitness = 100-(1/(f+0.1))
-        else:
-            self.fitness = 1/(f+0.1)
-
-        """
-        # fitness minimasi kasus non negative
-        self.fitness = 1/(f+0.1)
-        """
+        self.fitness = 100-f
 
         """
         # fitness maksimasi
@@ -62,7 +54,7 @@ class Populasi:
         # return 100*(x[0]**2 - x[1])**2 + (1-x[0])**2
 
     def getFittest(self):
-        _max = 0
+        _max = self.individu[0].fitness
         idx = 0
         for i in xrange(len(self.individu)):
             if (_max<self.individu[i].fitness):
@@ -82,7 +74,8 @@ class Populasi:
 class GA:
     def __init__(self):
         self.populasi = None
-        self.mut_rate = 0.3
+        self.mut_rate = 0.8
+        self.gen = 18
 
     def parentselection(self):
         # menggunakan roullette wheel
@@ -95,13 +88,18 @@ class GA:
             ran+= self.populasi.individu[i].fitness
             if (toss < ran):
                 return i
+        return i
 
     def crossover(self,u,v):
         # menggunakan crossover 1 pivot menghasilkan 2 anak
-        TP = random.randint(1,8)
+        a = []
+        a.append(random.randint(1,8))
+        a.append(random.randint(1,8))
+        a.append(random.randint(1,8))
+        a.sort()
         anak = [Individu() for x in range(2)]
-        anak[0].kromosom = list(u[:TP]+v[TP:])
-        anak[1].kromosom = list(v[:TP]+u[TP:])
+        anak[0].kromosom = list(u[:a[0]]+v[a[0]:a[1]]+u[a[1]:a[2]]+v[a[2]:])
+        anak[1].kromosom = list(v[:a[0]]+u[a[0]:a[1]]+v[a[1]:a[2]]+u[a[2]:])
         return anak
 
     def mutasi(self,ind):
@@ -118,7 +116,7 @@ ga = GA()
 newpopulation = None
 x = []
 y = []
-for gen in xrange(500):
+for gen in xrange(ga.gen):
     x.append([])
     y.append([])
     if (gen==0):
@@ -128,12 +126,13 @@ for gen in xrange(500):
     else:
         ga.populasi = newpopulation
         ga.populasi.countFitness()
-    
-    for z in ga.populasi.individu:
-        x[gen].append(z.getKromosom()[0])
-        y[gen].append(z.getKromosom()[1])
 
     newpopulation = Populasi()
+    
+    for z in ga.populasi.individu:
+        print z.getKromosom()," = ",z.fitness
+        x[gen].append(z.getKromosom()[0])
+        y[gen].append(z.getKromosom()[1])
 
     print "Generasi-",(gen+1)," : ",ga.populasi.getFittest().getKromosom()
     print "Fitness : ",ga.populasi.getFittest().fitness
@@ -151,8 +150,13 @@ for gen in xrange(500):
 
     newpopulation.countFitness()
     newpopulation.individu = newpopulation.individu+ga.populasi.individu
+    temp = []
     for i in xrange(len(newpopulation.individu)-len(ga.populasi.individu)):
-        newpopulation.individu.remove(newpopulation.getMinFit())
+        a = newpopulation.individu.index(newpopulation.getFittest())
+        temp.append(newpopulation.individu.pop(a))
+    newpopulation = Populasi()
+    newpopulation.individu = temp
+
 
 fig = plt.figure()
 ax = plt.axes(xlim=(-15, 15), ylim=(-15, 15))
@@ -177,6 +181,6 @@ def animate(i):
 
 print "Solusi : ",ga.populasi.getFittest().getKromosom()
 print "Hasil : ",ga.populasi.fungsi(ga.populasi.getFittest().getKromosom())
-anim = animation.FuncAnimation(fig, animate,frames=499, init_func=None, interval=160, blit=False,repeat=False)
+anim = animation.FuncAnimation(fig, animate,frames=ga.gen-1, init_func=None, interval=200, blit=False,repeat=False)
 
-plt.show()
+# plt.show()
